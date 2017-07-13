@@ -11,10 +11,24 @@
 			font-family: Arial, Helvetica, sans-serif;
 			font-size: normal;
 			font-weight: bold;
-			background-color: #E3F0FB;
+			background-color: #c4e6ff;
 			border-radius: 4px;
 			padding: 10px;
 			text-align: center;
+		}
+		#mainContent > Table
+		{
+			font-weight: normal;
+			background-color: #254460;
+			color : #FFFFFF;
+	
+		}
+		
+	   #mainContent td
+		{
+			text-align: left;
+			padding-left: 10px;
+			width: 50px;
 		}
 	</style>
 </head>
@@ -58,7 +72,7 @@
 
       //function Create Table
       function tabulate(data, columns) {
-			var table = d3.select('body').append('table')
+			var table = d3.select('#mainContent').append('table')
 			var thead = table.append('thead')
 			var	tbody = table.append('tbody');
 	
@@ -67,7 +81,22 @@
 			  .selectAll('th')
 			  .data(columns).enter()
 			  .append('th')
-			    .text(function (column) { return column; });
+			    .text(function (column) {  
+			        switch (column) {
+						     case '8':
+						        return 'Year';
+						     case '9': 
+						     	  return 'Gender';
+						     case '10':
+						        return 'Ethnic';
+                       case '11':
+						        return 'Name';
+						     case '12':
+						        return 'Count';
+ 						     default:
+         						 return column;
+			        }
+			    });
 	
 			// create a row for each object in the data
 			var rows = tbody.selectAll('tr')
@@ -89,10 +118,18 @@
 		  return table;
 		}
 		
-		function showHeader() {
-			
-		d3.select("#mainContent").append("h4")
-   	  .text(ds.category + "Sales (2013)");
+		function showHeader(ds) {
+
+			if(ds !== undefined)
+			{
+				d3.select("#mainContent").append("h4")
+   			  .text(ds.category + "Sales (2013)");
+			}
+			else 
+			{	
+					d3.select("#mainContent").append("h4")
+   			  .text("Most Popular Baby Names by Sex and Mother's Ethnic Group, New York City");
+			}
 		}
 
 		//add heading
