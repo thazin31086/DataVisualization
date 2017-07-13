@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+
+<head>
+<meta charset="utf-8">
+<title>Hello...</title>
+<script src="d3.min.js" charset="utf-8"></script>
+<style type="text/css">
+#mainContent {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: normal;
+	font-weight: bold;
+	background-color: #E3F0FB;
+	border-radius: 4px;
+	padding: 10px;
+	text-align: center;
+}
+
+
+
+</style>
+</head>
+
+<body>
+<div id="mainContent">
+</div>
+
+<script> 
+//d3 script 
+var h= 100;
+var w = 400; 
+var ds; //global var for data
+var salesTotal =0.0; 
+var salesAvg = 0.0;
+var metrics = [];
+   //linegraph
+   function linegraph()
+   {
+   	 var lineFun = d3.svg.line()
+	         .x(function(d){return ((d.month-20130001)/3.25)})
+	         .y(function(d){return h -d.sales;})
+	         .interpolate("linear"); 
+	         
+		 var svg = d3.select("#mainContent")
+		             .append("svg")
+		             .attr({width:w, height:h}); 
+		             
+		 var viz = svg.append("path")
+		              .attr({
+		              	d:lineFun(ds),
+		              	"stroke": "purple", 
+		              	"stroke-width": 2,
+		              	"fill":"none"
+		              });
+   	
+   }
+   
+   function showtotal()
+   {
+      for (var i = 0; i < ds.length; i++) 
+      {
+                    salesTotal += ds[i]['sales']*1; //*1 to make it a number
+      };
+      
+      salesAvg = salesTotal /ds.length;
+      
+      //add metrics to array
+      metrics.push("Sale Total: " + salesTotal); 
+      metrics.push("Sales Avg: " + salesAvg.toFixed(2));
+      
+
+      
+      var t = d3.select("#mainContent").append("table");          
+   	
+   	//add total to table
+   	var tr = t.selectAll("tr")
+    			.data(metrics)
+    			.enter()
+    			.append("tr")
+    			.append("td")
+    			.text(function(d) {return d;});
+   }
+   
+   //heading
+   d3.select("#mainContent")
+		.append("h3")
+		.text("D3-CSV Example!");
+   
+   //retrieve CSV data and display in line graph
+   d3.csv("MonthlySales.csv", function(error, data){
+			if(error){
+				console.log(error);
+			}
+			else{
+			    ds = data;
+			    linegraph();
+		 	    showtotal();
+			}
+   });
+  
+</script>
+
+</body>
+</html>
