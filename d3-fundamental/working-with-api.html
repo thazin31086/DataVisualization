@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<title>Hello...</title>
+	<script src="d3.min.js" charset="utf-8"></script>
+	<style type="text/css">
+		#mainContent {
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: normal;
+			font-weight: bold;
+			background-color: #E3F0FB;
+			border-radius: 4px;
+			padding: 10px;
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="mainContent">
+	</div>
+
+	<script>
+		//d3 script 
+		var h = 100;
+		var w = 400;
+
+		//linegraph
+		function linegraph(ds) {
+			var lineFun = d3.svg.line()
+				.x(function(d) {
+					return ((d.month - 20130001) / 3.25)
+				})
+				.y(function(d) {
+					return h - d.sales;
+				})
+				.interpolate("linear");
+
+			var svg = d3.select("#mainContent")
+				.append("svg")
+				.attr({
+					width: w,
+					height: h
+				});
+
+			var viz = svg.append("path")
+				.attr({
+					d: lineFun(ds.monthlySales),
+					"stroke": "purple",
+					"stroke-width": 2,
+					"fill": "none"
+				});
+
+		}
+
+      //function Create Table
+      function tabulate(data, columns) {
+			var table = d3.select('body').append('table')
+			var thead = table.append('thead')
+			var	tbody = table.append('tbody');
+	
+			// append the header row
+			thead.append('tr')
+			  .selectAll('th')
+			  .data(columns).enter()
+			  .append('th')
+			    .text(function (column) { return column; });
+	
+			// create a row for each object in the data
+			var rows = tbody.selectAll('tr')
+			  .data(data)
+			  .enter()
+			  .append('tr');
+	
+			// create a cell in each row for each column
+			var cells = rows.selectAll('td')
+			  .data(function (row) {
+			    return columns.map(function (column) {
+			      return {column: column, value: row[column]};
+			    });
+			  })
+			  .enter()
+			  .append('td')
+			    .text(function (d) { return d.value; });
+	
+		  return table;
+		}
+		
+		function showHeader() {
+			
+		d3.select("#mainContent").append("h4")
+   	  .text(ds.category + "Sales (2013)");
+		}
+
+		//add heading
+		d3.select("#mainContent")
+			.append("h3")
+			.text("D3-API-JSON Example!");
+
+		//retrieve CSV data and display in line graph
+		d3.json("https://api.github.com/repos/thazin31086/DataVisualization/contents/d3-fundamental/MonthlySalesbyCategoryMultiple.json", function(error, data) {
+			if (error) {
+				console.log(error);
+			}
+			else {
+            var datadecode= JSON.parse(window.atob(data.content));
+				datadecode.contents.forEach(
+					function(ds) {
+						showHeader(ds);
+						linegraph(ds);
+					});
+
+			}
+		});
+		
+	  	
+	  d3.json("https://data.cityofnewyork.us/api/views/25th-nujf/rows.json", function(error, data) {
+			if (error) {
+				console.log(error);
+			}
+			else {
+            var decodedata= data;
+            console.log(decodedata);
+            showHeader();
+            tabulate(decodedata.data, ['8', '9', '10', '11', '12']);
+			}
+		});
+	</script>
+
+</body>
+
+</html>
